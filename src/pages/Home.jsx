@@ -6,6 +6,9 @@ import API from '../api';
 import HotelCard from '../components/HotelCard';
 import { useAuth } from '../context/AuthContext';
 
+const FALLBACK_IMG = 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80';
+const handleImgError = (e) => { e.target.onerror = null; e.target.src = FALLBACK_IMG; };
+
 const AREAS = [
   { name: 'Colaba', img: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=400&q=80' },
   { name: 'Juhu', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80' },
@@ -91,7 +94,7 @@ const Home = () => {
       {/* Hero */}
       <section className="relative h-[85vh] min-h-[600px] flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&q=80" alt="Luxury hotel" className="w-full h-full object-cover" />
+          <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&q=80" alt="Luxury hotel" className="w-full h-full object-cover" onError={handleImgError} />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -134,7 +137,7 @@ const Home = () => {
                       onClick={() => setShowSuggestions(false)}
                       className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
                     >
-                      <img src={s.image} alt="" className="w-12 h-9 rounded-lg object-cover" />
+                      <img src={s.image || FALLBACK_IMG} alt="" className="w-12 h-9 rounded-lg object-cover" onError={handleImgError} />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-gray-900 truncate">{s.name}</p>
                         <p className="text-xs text-gray-400">{s.location} · {formatPrice(s.price)}/night</p>
@@ -189,7 +192,7 @@ const Home = () => {
             {AREAS.map((area, i) => (
               <motion.div key={area.name} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.05 }}>
                 <Link to={`/hotels?location=${area.name}`} className="group relative aspect-[3/4] rounded-2xl overflow-hidden block">
-                  <img src={area.img} alt={area.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                  <img src={area.img} alt={area.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onError={handleImgError} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                   <div className="absolute bottom-3 left-3 right-3"><h3 className="text-white font-semibold text-sm">{area.name}</h3></div>
                 </Link>
@@ -224,7 +227,7 @@ const Home = () => {
               {recentlyViewed.map((h) => (
                 <Link key={h._id} to={`/booking/${h._id}`} className="card overflow-hidden group">
                   <div className="aspect-[3/2] overflow-hidden">
-                    <img src={h.image} alt={h.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <img src={h.image || FALLBACK_IMG} alt={h.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" loading="lazy" onError={handleImgError} />
                   </div>
                   <div className="p-3">
                     <p className="text-sm font-medium truncate" style={{color: 'var(--text-primary)'}}>{h.name}</p>

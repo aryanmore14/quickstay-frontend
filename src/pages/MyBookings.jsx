@@ -6,6 +6,9 @@ import API from '../api';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
+const FALLBACK_IMG = 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80';
+const handleImgError = (e) => { e.target.onerror = null; e.target.src = FALLBACK_IMG; };
+
 const MyBookings = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -59,7 +62,7 @@ const MyBookings = () => {
               return (
                 <motion.div key={bk._id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="card-static overflow-hidden">
                   <div className="flex flex-col sm:flex-row">
-                    <div className="sm:w-40 h-32 sm:h-auto shrink-0"><img src={bk.hotel?.image} alt={bk.hotel?.name} className="w-full h-full object-cover" /></div>
+                    <div className="sm:w-40 h-32 sm:h-auto shrink-0"><img src={bk.hotel?.image || FALLBACK_IMG} alt={bk.hotel?.name} className="w-full h-full object-cover" loading="lazy" onError={handleImgError} /></div>
                     <div className="flex-1 p-4 flex flex-col sm:flex-row sm:items-center gap-4">
                       <div className="flex-1 min-w-0">
                         <h3 className="font-semibold text-sm mb-1" style={{color:'var(--text-primary)'}}>{bk.hotel?.name}</h3>

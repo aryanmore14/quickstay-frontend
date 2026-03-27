@@ -11,6 +11,9 @@ const TAG_STYLES = {
   'Beach': 'tag-beach', 'Eco-Friendly': 'tag-eco',
 };
 
+const FALLBACK_IMG = 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80';
+const handleImgError = (e) => { e.target.onerror = null; e.target.src = FALLBACK_IMG; };
+
 const Booking = () => {
   const { id } = useParams();
   const { user } = useAuth();
@@ -45,7 +48,7 @@ const Booking = () => {
     fetchData();
   }, [id, navigate]);
 
-  const allImages = hotel ? [hotel.image, ...(hotel.images || [])] : [];
+  const allImages = hotel ? [hotel.image, ...(hotel.images || [])].filter(Boolean) : [];
   const nights = checkIn && checkOut ? Math.max(0, Math.ceil((new Date(checkOut) - new Date(checkIn)) / 86400000)) : 0;
   const roomPrice = nights * (hotel?.price || 0) * rooms;
   const taxes = Math.round(roomPrice * 0.18);
@@ -93,7 +96,7 @@ const Booking = () => {
             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="w-full max-w-md rounded-2xl p-6" style={{background: 'var(--bg-card)', border: '1px solid var(--border)'}}>
               <h2 className="font-display font-bold text-xl mb-4" style={{color: 'var(--text-primary)'}}>Booking Summary</h2>
               <div className="flex gap-3 mb-4 pb-4" style={{borderBottom: '1px solid var(--border)'}}>
-                <img src={hotel.image} alt="" className="w-20 h-16 rounded-xl object-cover" />
+                <img src={hotel.image || FALLBACK_IMG} alt="" className="w-20 h-16 rounded-xl object-cover" onError={handleImgError} />
                 <div>
                   <p className="font-semibold text-sm" style={{color: 'var(--text-primary)'}}>{hotel.name}</p>
                   <p className="text-xs" style={{color: 'var(--text-muted)'}}>{hotel.location}, Mumbai</p>
@@ -125,14 +128,14 @@ const Booking = () => {
         {/* Image Gallery */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="relative rounded-2xl overflow-hidden mb-8" style={{background:'var(--bg-secondary)'}}>
           <div className="aspect-[2.2/1] sm:aspect-[2.5/1]">
-            <img src={allImages[currentImg]} alt={hotel.name} className="w-full h-full object-cover" />
+            <img src={allImages[currentImg] || FALLBACK_IMG} alt={hotel.name} className="w-full h-full object-cover" loading="lazy" onError={handleImgError} />
           </div>
           {allImages.length > 1 && (<>
             <button onClick={() => setCurrentImg(p => p === 0 ? allImages.length - 1 : p - 1)} className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg"><FaChevronLeft className="text-gray-700 text-sm" /></button>
             <button onClick={() => setCurrentImg(p => p === allImages.length - 1 ? 0 : p + 1)} className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg"><FaChevronRight className="text-gray-700 text-sm" /></button>
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">{allImages.map((_, i) => <button key={i} onClick={() => setCurrentImg(i)} className={`w-2 h-2 rounded-full transition-all ${i === currentImg ? 'bg-white w-5' : 'bg-white/50'}`} />)}</div>
           </>)}
-          {allImages.length > 1 && <div className="flex gap-2 mt-3">{allImages.map((img, i) => <button key={i} onClick={() => setCurrentImg(i)} className={`w-20 h-14 rounded-lg overflow-hidden border-2 transition-all ${i === currentImg ? 'border-blue-500 opacity-100' : 'border-transparent opacity-60 hover:opacity-80'}`}><img src={img} alt="" className="w-full h-full object-cover" /></button>)}</div>}
+          {allImages.length > 1 && <div className="flex gap-2 mt-3">{allImages.map((img, i) => <button key={i} onClick={() => setCurrentImg(i)} className={`w-20 h-14 rounded-lg overflow-hidden border-2 transition-all ${i === currentImg ? 'border-blue-500 opacity-100' : 'border-transparent opacity-60 hover:opacity-80'}`}><img src={img || FALLBACK_IMG} alt="" className="w-full h-full object-cover" loading="lazy" onError={handleImgError} /></button>)}</div>}
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

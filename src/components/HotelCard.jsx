@@ -10,6 +10,9 @@ const TAG_STYLES = {
   'Eco-Friendly': 'tag-eco',
 };
 
+const FALLBACK_IMG = 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80';
+const handleImgError = (e) => { e.target.onerror = null; e.target.src = FALLBACK_IMG; };
+
 const HotelCard = ({ hotel, index = 0 }) => {
   const formatPrice = (price) =>
     new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(price);
@@ -32,7 +35,7 @@ const HotelCard = ({ hotel, index = 0 }) => {
       <Link to={`/booking/${hotel._id}`} className="group block" onClick={saveToRecent}>
         <div className="card overflow-hidden">
           <div className="relative overflow-hidden aspect-[4/3]">
-            <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" />
+            <img src={hotel.image || FALLBACK_IMG} alt={hotel.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy" onError={handleImgError} />
 
             {/* Rating badge */}
             <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-sm px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm">

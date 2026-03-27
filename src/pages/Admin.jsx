@@ -7,6 +7,9 @@ import API from '../api';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
+const FALLBACK_IMG = 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80';
+const handleImgError = (e) => { e.target.onerror = null; e.target.src = FALLBACK_IMG; };
+
 const Admin = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -106,7 +109,7 @@ const Admin = () => {
                 return (
                   <motion.div key={bk._id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}
                     className="card-static p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center hover:shadow-md transition-shadow">
-                    <div className="w-full sm:w-24 h-16 rounded-lg overflow-hidden shrink-0"><img src={bk.hotel?.image} alt="" className="w-full h-full object-cover" /></div>
+                    <div className="w-full sm:w-24 h-16 rounded-lg overflow-hidden shrink-0"><img src={bk.hotel?.image || FALLBACK_IMG} alt="" className="w-full h-full object-cover" loading="lazy" onError={handleImgError} /></div>
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-sm" style={{color:'var(--text-primary)'}}>{bk.hotel?.name}</div>
                       <div className="text-xs flex items-center gap-1 mt-0.5" style={{color:'var(--text-muted)'}}><FaMapMarkerAlt className="text-blue-400" style={{fontSize:'9px'}} /> {bk.hotel?.location}</div>
