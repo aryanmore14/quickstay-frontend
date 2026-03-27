@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FaSearch, FaStar, FaShieldAlt, FaCreditCard, FaMapMarkerAlt } from 'react-icons/fa';
-import { HiArrowRight } from 'react-icons/hi';
+import { FaSearch, FaStar, FaMapMarkerAlt, FaShieldAlt, FaHeadset, FaCreditCard } from 'react-icons/fa';
 import API from '../api';
 import HotelCard from '../components/HotelCard';
 
-const AREAS = ['Colaba', 'Bandra', 'Juhu', 'Andheri', 'Powai', 'Lower Parel', 'Navi Mumbai', 'Dadar'];
+const AREAS = [
+  { name: 'Colaba', img: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=400&q=80' },
+  { name: 'Juhu', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80' },
+  { name: 'Bandra', img: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e13?w=400&q=80' },
+  { name: 'Andheri', img: 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=400&q=80' },
+  { name: 'Nariman Point', img: 'https://images.unsplash.com/photo-1529253355930-ddbe423a2ac7?w=400&q=80' },
+  { name: 'Powai', img: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&q=80' },
+];
 
 const Home = () => {
   const [featuredHotels, setFeaturedHotels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -27,114 +34,125 @@ const Home = () => {
     fetchFeatured();
   }, []);
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      window.location.href = `/hotels?search=${encodeURIComponent(searchQuery.trim())}`;
+    }
+  };
+
   return (
     <div className="page-enter">
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-        {/* Background */}
+      <section className="relative h-[85vh] min-h-[600px] flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=1600&q=80"
-            alt="Mumbai Skyline"
+            src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1600&q=80"
+            alt="Luxury hotel"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-dark-950/70 via-dark-950/60 to-dark-950" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
         </div>
 
-        {/* Floating blobs */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="max-w-2xl">
+            <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm font-medium mb-4">
+              🏨 Mumbai's #1 Hotel Platform
+            </span>
+            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-white leading-tight mb-4">
+              Find Your Perfect
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                Stay in Mumbai
+              </span>
+            </h1>
+            <p className="text-white/80 text-lg mb-8 max-w-lg">
+              Discover 25+ handpicked hotels across Mumbai — from luxury palaces to cozy budget stays.
+            </p>
 
-        {/* Content */}
-        <div className="relative z-10 text-center max-w-4xl mx-auto px-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass text-sm text-blue-300 mb-6 animate-fade-in">
-            <FaMapMarkerAlt /> Mumbai's #1 Hotel Booking Platform
-          </div>
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="flex bg-white rounded-2xl shadow-xl overflow-hidden max-w-lg">
+              <div className="flex items-center flex-1 px-4">
+                <FaSearch className="text-gray-400 mr-3" />
+                <input
+                  type="text"
+                  placeholder="Search hotels, areas..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full py-4 text-gray-700 outline-none text-sm"
+                />
+              </div>
+              <button type="submit" className="btn-primary !rounded-none !rounded-r-2xl px-6">
+                Search
+              </button>
+            </form>
 
-          <h1 className="font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl mb-6 animate-slide-up">
-            Find Your Perfect
-            <span className="block gradient-text">Stay in Mumbai</span>
-          </h1>
-
-          <p className="text-slate-300 text-lg sm:text-xl max-w-2xl mx-auto mb-10 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-            From luxury suites in Colaba to backpacker hostels in Andheri — discover 25+ handpicked hotels with instant booking and secure payments.
-          </p>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <Link
-              to="/hotels"
-              className="btn-glow px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl text-white font-semibold text-lg hover:from-blue-500 hover:to-purple-500 transition-all shadow-xl shadow-blue-500/25 flex items-center gap-2"
-            >
-              Browse Hotels <HiArrowRight />
-            </Link>
-            <Link
-              to="/register"
-              className="px-8 py-4 glass rounded-xl text-white font-semibold text-lg hover:bg-slate-700/50 transition-all flex items-center gap-2"
-            >
-              Create Account
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-16 border-y border-slate-800/50">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
-          {[
-            { number: '25+', label: 'Mumbai Hotels' },
-            { number: '₹1,000', label: 'Starting Price' },
-            { number: '4.5★', label: 'Avg Rating' },
-            { number: '100%', label: 'Secure Payments' },
-          ].map((stat, i) => (
-            <div key={i} className="text-center">
-              <div className="font-display font-bold text-3xl gradient-text">{stat.number}</div>
-              <div className="text-slate-400 text-sm mt-1">{stat.label}</div>
+            {/* Stats */}
+            <div className="flex gap-8 mt-8">
+              {[
+                { num: '25+', label: 'Hotels' },
+                { num: '13', label: 'Areas' },
+                { num: '₹1K-15K', label: 'Price Range' },
+              ].map((stat, i) => (
+                <div key={i}>
+                  <div className="text-white font-bold text-xl">{stat.num}</div>
+                  <div className="text-white/60 text-sm">{stat.label}</div>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </section>
 
       {/* Popular Areas */}
-      <section className="py-20 max-w-7xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="font-display font-bold text-3xl sm:text-4xl text-white mb-3">Explore Mumbai Areas</h2>
-          <p className="text-slate-400 max-w-lg mx-auto">Browse hotels by popular neighborhoods across the city</p>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-10">
+          <h2 className="font-display font-bold text-2xl sm:text-3xl text-gray-900 mb-2">
+            Explore Mumbai Areas
+          </h2>
+          <p className="text-gray-500">Popular neighborhoods with the best hotels</p>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {AREAS.map((area) => (
             <Link
-              key={area}
-              to={`/hotels?location=${area}`}
-              className="glass p-5 rounded-xl text-center hover:bg-slate-700/50 transition-all group"
+              key={area.name}
+              to={`/hotels?location=${area.name}`}
+              className="group relative aspect-[3/4] rounded-2xl overflow-hidden"
             >
-              <FaMapMarkerAlt className="text-blue-400 text-xl mx-auto mb-2 group-hover:scale-125 transition-transform" />
-              <span className="font-medium text-white text-sm">{area}</span>
+              <img src={area.img} alt={area.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute bottom-3 left-3 right-3">
+                <h3 className="text-white font-semibold text-sm">{area.name}</h3>
+              </div>
             </Link>
           ))}
         </div>
       </section>
 
       {/* Featured Hotels */}
-      <section className="py-20 max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between mb-10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 bg-white rounded-3xl mx-4 sm:mx-6 lg:mx-auto mb-16" style={{boxShadow: '0 1px 3px rgba(0,0,0,0.04)'}}>
+        <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="font-display font-bold text-3xl sm:text-4xl text-white mb-2">Featured Hotels</h2>
-            <p className="text-slate-400">Top-rated stays handpicked for you</p>
+            <h2 className="font-display font-bold text-2xl sm:text-3xl text-gray-900 mb-1">
+              Top Rated Hotels
+            </h2>
+            <p className="text-gray-500 text-sm">Handpicked for an exceptional experience</p>
           </div>
-          <Link to="/hotels" className="hidden sm:flex items-center gap-2 text-blue-400 hover:text-blue-300 font-medium transition-colors">
-            View all <HiArrowRight />
+          <Link to="/hotels" className="btn-outline hidden sm:inline-flex items-center gap-1 text-sm">
+            View all →
           </Link>
         </div>
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="rounded-2xl overflow-hidden glass">
-                <div className="h-52 skeleton" />
+              <div key={i} className="rounded-2xl overflow-hidden border border-gray-100">
+                <div className="aspect-[4/3] skeleton" />
                 <div className="p-4 space-y-3">
-                  <div className="h-5 w-3/4 skeleton rounded" />
-                  <div className="h-4 w-1/2 skeleton rounded" />
-                  <div className="h-4 w-full skeleton rounded" />
+                  <div className="h-5 w-3/4 skeleton" />
+                  <div className="h-4 w-1/2 skeleton" />
+                  <div className="h-4 w-full skeleton" />
                 </div>
               </div>
             ))}
@@ -147,31 +165,27 @@ const Home = () => {
           </div>
         )}
 
-        <div className="sm:hidden mt-8 text-center">
-          <Link to="/hotels" className="inline-flex items-center gap-2 text-blue-400 font-medium">
-            View all hotels <HiArrowRight />
+        <div className="text-center mt-8 sm:hidden">
+          <Link to="/hotels" className="btn-primary inline-block">
+            View all hotels →
           </Link>
         </div>
       </section>
 
-      {/* Why Quickstay */}
-      <section className="py-20 max-w-7xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="font-display font-bold text-3xl sm:text-4xl text-white mb-3">Why Quickstay?</h2>
-          <p className="text-slate-400 max-w-lg mx-auto">Book with confidence — here's what sets us apart</p>
-        </div>
+      {/* Features */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
-            { icon: <FaSearch className="text-2xl" />, title: 'Easy Search', desc: 'Filter by area, price, and rating to find your ideal Mumbai hotel.' },
-            { icon: <FaCreditCard className="text-2xl" />, title: 'Secure Payments', desc: 'Pay safely with Razorpay — UPI, cards, and net banking accepted.' },
-            { icon: <FaShieldAlt className="text-2xl" />, title: 'Verified Hotels', desc: 'Every hotel is handpicked and verified for quality and hygiene.' },
-          ].map((feature, i) => (
-            <div key={i} className="glass p-8 rounded-2xl text-center group hover:bg-slate-700/30 transition-all">
-              <div className="w-14 h-14 mx-auto mb-4 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center text-blue-400 group-hover:scale-110 transition-transform">
-                {feature.icon}
+            { icon: <FaShieldAlt />, title: 'Secure Booking', desc: 'Your payments are protected with Razorpay secure checkout' },
+            { icon: <FaHeadset />, title: '24/7 Support', desc: 'Round-the-clock assistance for all your travel needs' },
+            { icon: <FaCreditCard />, title: 'Best Prices', desc: 'Guaranteed best rates across all Mumbai hotels' },
+          ].map((feat, i) => (
+            <div key={i} className="card-static p-6 text-center group hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mx-auto mb-4 group-hover:scale-110 transition-transform">
+                {feat.icon}
               </div>
-              <h3 className="font-display font-semibold text-lg text-white mb-2">{feature.title}</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">{feature.desc}</p>
+              <h3 className="font-semibold text-gray-900 mb-2">{feat.title}</h3>
+              <p className="text-gray-500 text-sm">{feat.desc}</p>
             </div>
           ))}
         </div>
