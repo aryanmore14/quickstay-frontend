@@ -38,6 +38,16 @@ const Home = () => {
         if (Array.isArray(data)) {
           setFeaturedHotels(data.slice(0, 6));
           setDealHotels(data.filter(h => h.discount > 0).slice(0, 4));
+
+          // Recently viewed — use fresh API data matched by stored IDs
+          try {
+            const recent = JSON.parse(localStorage.getItem('recentHotels') || '[]');
+            const ids = recent.slice(0, 4).map(h => h._id || h);
+            if (ids.length > 0) {
+              const freshRecent = ids.map(id => data.find(h => h._id === id)).filter(Boolean);
+              setRecentlyViewed(freshRecent);
+            }
+          } catch (e) {}
         }
       } catch (err) {
         console.error(err);
@@ -46,12 +56,6 @@ const Home = () => {
       }
     };
     fetchAll();
-
-    // Recently viewed from localStorage
-    try {
-      const recent = JSON.parse(localStorage.getItem('recentHotels') || '[]');
-      setRecentlyViewed(recent.slice(0, 4));
-    } catch (e) {}
   }, []);
 
   // Fetch recommendations for logged-in users
