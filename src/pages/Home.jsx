@@ -7,7 +7,7 @@ import HotelCard from '../components/HotelCard';
 const AREAS = [
   { name: 'Colaba', img: 'https://images.unsplash.com/photo-1570168007204-dfb528c6958f?w=400&q=80' },
   { name: 'Juhu', img: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80' },
-  { name: 'Bandra', img: 'https://images.unsplash.com/photo-1567157577867-05ccb1388e13?w=400&q=80' },
+  { name: 'Bandra', img: 'https://images.unsplash.com/photo-1595658658481-d53d3f999875?w=400&q=80' },
   { name: 'Andheri', img: 'https://images.unsplash.com/photo-1477587458883-47145ed94245?w=400&q=80' },
   { name: 'Nariman Point', img: 'https://images.unsplash.com/photo-1529253355930-ddbe423a2ac7?w=400&q=80' },
   { name: 'Powai', img: 'https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&q=80' },
