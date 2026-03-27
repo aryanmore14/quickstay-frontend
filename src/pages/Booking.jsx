@@ -209,11 +209,27 @@ const Booking = () => {
                 <div><label className="block text-xs font-medium mb-1" style={{color:'var(--text-muted)'}}><FaCalendarAlt className="inline mr-1" /> Check-in</label><input type="date" value={checkIn} onChange={(e) => setCheckIn(e.target.value)} min={new Date().toISOString().split('T')[0]} className="input-field text-sm" /></div>
                 <div><label className="block text-xs font-medium mb-1" style={{color:'var(--text-muted)'}}><FaCalendarAlt className="inline mr-1" /> Check-out</label><input type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} min={checkIn || new Date().toISOString().split('T')[0]} className="input-field text-sm" /></div>
 
-                {/* Guest Selector */}
-                <div className="grid grid-cols-3 gap-2">
-                  <div><label className="block text-[10px] font-medium mb-1" style={{color:'var(--text-muted)'}}><FaUser className="inline mr-0.5" style={{fontSize:'9px'}} /> Adults</label><select value={adults} onChange={e => setAdults(+e.target.value)} className="input-field text-sm !py-2">{[1,2,3,4,5,6].map(n => <option key={n} value={n}>{n}</option>)}</select></div>
-                  <div><label className="block text-[10px] font-medium mb-1" style={{color:'var(--text-muted)'}}><FaChild className="inline mr-0.5" style={{fontSize:'9px'}} /> Children</label><select value={children} onChange={e => setChildren(+e.target.value)} className="input-field text-sm !py-2">{[0,1,2,3,4].map(n => <option key={n} value={n}>{n}</option>)}</select></div>
-                  <div><label className="block text-[10px] font-medium mb-1" style={{color:'var(--text-muted)'}}><FaDoorOpen className="inline mr-0.5" style={{fontSize:'9px'}} /> Rooms</label><select value={rooms} onChange={e => setRooms(+e.target.value)} className="input-field text-sm !py-2">{[1,2,3,4].map(n => <option key={n} value={n}>{n}</option>)}</select></div>
+                {/* Guest Selector - Stepper Controls */}
+                <div className="space-y-2.5">
+                  {[
+                    { label: 'Adults', icon: <FaUser style={{fontSize:'9px'}} />, value: adults, set: setAdults, min: 1, max: 10 },
+                    { label: 'Children', icon: <FaChild style={{fontSize:'9px'}} />, value: children, set: setChildren, min: 0, max: 6 },
+                    { label: 'Rooms', icon: <FaDoorOpen style={{fontSize:'9px'}} />, value: rooms, set: setRooms, min: 1, max: 5 },
+                  ].map(g => (
+                    <div key={g.label} className="flex items-center justify-between p-2.5 rounded-xl" style={{background:'var(--bg-secondary)'}}>
+                      <span className="text-xs font-medium flex items-center gap-1.5" style={{color:'var(--text-secondary)'}}>{g.icon} {g.label}</span>
+                      <div className="flex items-center gap-2">
+                        <button type="button" onClick={() => g.set(Math.max(g.min, g.value - 1))} disabled={g.value <= g.min}
+                          className="w-7 h-7 rounded-lg flex items-center justify-center text-sm font-bold transition-all disabled:opacity-30"
+                          style={{background:'var(--bg-card)', color:'var(--text-primary)', border:'1px solid var(--border)'}}>−</button>
+                        <input type="number" value={g.value} onChange={e => { const v = parseInt(e.target.value) || g.min; g.set(Math.max(g.min, Math.min(g.max, v))); }}
+                          className="w-10 text-center text-sm font-semibold bg-transparent outline-none" style={{color:'var(--text-primary)'}} min={g.min} max={g.max} />
+                        <button type="button" onClick={() => g.set(Math.min(g.max, g.value + 1))} disabled={g.value >= g.max}
+                          className="w-7 h-7 rounded-lg flex items-center justify-center text-sm font-bold transition-all disabled:opacity-30"
+                          style={{background:'var(--bg-card)', color:'var(--text-primary)', border:'1px solid var(--border)'}}>+</button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
