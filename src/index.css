@@ -20,6 +20,7 @@
   --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
   --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.04);
   --nav-bg: rgba(255,255,255,0.95);
+  --bg-overlay: rgba(248, 250, 252, 0.88);
 }
 
 [data-theme="dark"] {
@@ -37,6 +38,7 @@
   --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.4);
   --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.5);
   --nav-bg: rgba(15,23,42,0.95);
+  --bg-overlay: rgba(15, 23, 42, 0.92);
 }
 
 * {
@@ -49,6 +51,11 @@ html {
   scroll-behavior: smooth;
 }
 
+#root {
+  position: relative;
+  z-index: 1;
+}
+
 body {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   background-color: var(--bg-secondary);
@@ -56,6 +63,20 @@ body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   transition: background-color 0.3s ease, color 0.3s ease;
+  background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1920&q=60');
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+}
+
+/* Subtle overlay so content stays readable */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  z-index: 0;
+  pointer-events: none;
 }
 
 /* ===== UTILITY CLASSES ===== */
