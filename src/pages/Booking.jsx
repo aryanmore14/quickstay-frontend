@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaStar, FaMapMarkerAlt, FaChevronLeft, FaChevronRight, FaCalendarAlt, FaUser, FaCheckCircle, FaChild, FaDoorOpen, FaShieldAlt, FaFire } from 'react-icons/fa';
+import { FaStar, FaMapMarkerAlt, FaChevronLeft, FaChevronRight, FaCalendarAlt, FaUser, FaCheckCircle, FaChild, FaDoorOpen, FaShieldAlt, FaFire, FaCreditCard, FaMobileAlt, FaUniversity, FaWallet } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import API from '../api';
 import { useAuth } from '../context/AuthContext';
@@ -32,6 +32,8 @@ const Booking = () => {
   const [reviewText, setReviewText] = useState('');
   const [reviewRating, setReviewRating] = useState(5);
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [paymentStep, setPaymentStep] = useState('summary'); // 'summary' | 'payment' | 'processing' | 'success'
+  const [paymentMethod, setPaymentMethod] = useState('');
 
   const formatPrice = (p) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(p);
   const formatDate = (d) => new Date(d).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
@@ -57,12 +59,16 @@ const Booking = () => {
   const handleBookNow = () => { if (!user) { toast.error('Please login first'); navigate('/login'); return; } if (!checkIn || !checkOut || nights <= 0) { toast.error('Select valid dates'); return; } setShowSummary(true); };
 
   const confirmBooking = async () => {
+    if (!paymentMethod) { toast.error('Select a payment method'); return; }
+    setPaymentStep('processing');
+    // Simulate payment processing
+    await new Promise(r => setTimeout(r, 2500));
     setBooking(true);
     try {
       await API.post('/bookings', { hotel: id, checkIn, checkOut, guests: adults + children, totalPrice: roomPrice });
-      toast.success('🎉 Booking confirmed!');
-      navigate('/my-bookings');
-    } catch (err) { toast.error(err.response?.data?.message || 'Booking failed'); }
+      setPaymentStep('success');
+      setTimeout(() => { navigate('/my-bookings'); }, 2000);
+    } catch (err) { toast.error(err.response?.data?.message || 'Booking failed'); setPaymentStep('payment'); }
     finally { setBooking(false); }
   };
 
@@ -91,7 +97,7 @@ const Booking = () => {
     <div className="pt-20 min-h-screen">
       {/* Booking Summary Modal */}
       <AnimatePresence>
-        {showSummary && (
+        {showSummary && paymentStep === 'summary' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)'}}>
             <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="w-full max-w-md rounded-2xl p-6" style={{background: 'var(--bg-card)', border: '1px solid var(--border)'}}>
               <h2 className="font-display font-bold text-xl mb-4" style={{color: 'var(--text-primary)'}}>Booking Summary</h2>
@@ -116,13 +122,83 @@ const Booking = () => {
               </div>
               <div className="flex items-center gap-2 text-[11px] mb-4" style={{color:'var(--text-muted)'}}><FaShieldAlt className="text-green-500" /> Secure payment · Free cancellation</div>
               <div className="flex gap-3">
-                <button onClick={() => setShowSummary(false)} className="btn-outline flex-1">Edit</button>
-                <button onClick={confirmBooking} disabled={booking} className="btn-primary flex-1">{booking ? 'Confirming...' : 'Confirm & Pay'}</button>
+                <button onClick={() => { setShowSummary(false); setPaymentStep('summary'); }} className="btn-outline flex-1">Edit</button>
+                <button onClick={() => setPaymentStep('payment')} className="btn-primary flex-1">Continue to Payment</button>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Payment Method Modal */}
+      <AnimatePresence>
+        {showSummary && paymentStep === 'payment' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)'}}>
+            <motion.div initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }} className="w-full max-w-md rounded-2xl p-6" style={{background: 'var(--bg-card)', border: '1px solid var(--border)'}}>
+              <h2 className="font-display font-bold text-xl mb-1" style={{color: 'var(--text-primary)'}}>Choose Payment Method</h2>
+              <p className="text-sm mb-5" style={{color: 'var(--text-muted)'}}>Total: <span className="font-bold" style={{color: 'var(--text-primary)'}}>{formatPrice(totalPrice)}</span></p>
+
+              <div className="space-y-2.5 mb-5">
+                {[
+                  { id: 'upi', icon: <FaMobileAlt />, label: 'UPI', desc: 'Google Pay, PhonePe, Paytm', color: 'text-purple-500 bg-purple-50' },
+                  { id: 'card', icon: <FaCreditCard />, label: 'Credit / Debit Card', desc: 'Visa, Mastercard, RuPay', color: 'text-blue-500 bg-blue-50' },
+                  { id: 'netbanking', icon: <FaUniversity />, label: 'Net Banking', desc: 'All major banks supported', color: 'text-emerald-500 bg-emerald-50' },
+                  { id: 'wallet', icon: <FaWallet />, label: 'Mobile Wallet', desc: 'Paytm, Amazon Pay, MobiKwik', color: 'text-amber-500 bg-amber-50' },
+                ].map(pm => (
+                  <button key={pm.id} onClick={() => setPaymentMethod(pm.id)}
+                    className={`w-full flex items-center gap-3.5 p-3.5 rounded-xl transition-all text-left ${paymentMethod === pm.id ? 'ring-2 ring-blue-500 shadow-md' : ''}`}
+                    style={{ background: paymentMethod === pm.id ? 'var(--accent-light)' : 'var(--bg-secondary)', border: '1px solid ' + (paymentMethod === pm.id ? 'var(--accent)' : 'var(--border)') }}>
+                    <div className={`w-10 h-10 ${pm.color} rounded-xl flex items-center justify-center shrink-0`}>{pm.icon}</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm" style={{color: 'var(--text-primary)'}}>{pm.label}</p>
+                      <p className="text-xs" style={{color: 'var(--text-muted)'}}>{pm.desc}</p>
+                    </div>
+                    {paymentMethod === pm.id && <FaCheckCircle className="text-blue-500 shrink-0" />}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2 text-[11px] mb-4" style={{color:'var(--text-muted)'}}><FaShieldAlt className="text-green-500" /> 256-bit SSL encrypted · PCI DSS compliant</div>
+              <div className="flex gap-3">
+                <button onClick={() => setPaymentStep('summary')} className="btn-outline flex-1">Back</button>
+                <button onClick={confirmBooking} disabled={!paymentMethod || booking} className="btn-primary flex-1 disabled:opacity-50">
+                  Pay {formatPrice(totalPrice)}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Processing / Success Modal */}
+      <AnimatePresence>
+        {showSummary && (paymentStep === 'processing' || paymentStep === 'success') && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)'}}>
+            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="w-full max-w-sm rounded-2xl p-8 text-center" style={{background: 'var(--bg-card)', border: '1px solid var(--border)'}}>
+              {paymentStep === 'processing' ? (
+                <>
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-50 flex items-center justify-center">
+                    <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full" style={{borderWidth: '3px'}} />
+                  </div>
+                  <h3 className="font-display font-bold text-lg mb-1" style={{color: 'var(--text-primary)'}}>Processing Payment</h3>
+                  <p className="text-sm" style={{color: 'var(--text-muted)'}}>Please wait while we confirm your payment...</p>
+                </>
+              ) : (
+                <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-50 flex items-center justify-center">
+                    <FaCheckCircle className="text-3xl text-emerald-500" />
+                  </div>
+                  <h3 className="font-display font-bold text-lg mb-1" style={{color: 'var(--text-primary)'}}>Booking Confirmed! 🎉</h3>
+                  <p className="text-sm mb-1" style={{color: 'var(--text-muted)'}}>Payment of {formatPrice(totalPrice)} received</p>
+                  <p className="text-xs" style={{color: 'var(--text-muted)'}}>Redirecting to your bookings...</p>
+                </motion.div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Image Gallery */}
