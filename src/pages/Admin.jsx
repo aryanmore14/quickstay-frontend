@@ -111,8 +111,8 @@ const Admin = () => {
                     className="card-static p-4 flex flex-col sm:flex-row gap-4 items-start sm:items-center hover:shadow-md transition-shadow">
                     <div className="w-full sm:w-24 h-16 rounded-lg overflow-hidden shrink-0"><img src={bk.hotel?.image || FALLBACK_IMG} alt="" className="w-full h-full object-cover" loading="lazy" onError={handleImgError} /></div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm" style={{color:'var(--text-primary)'}}>{bk.hotel?.name}</div>
-                      <div className="text-xs flex items-center gap-1 mt-0.5" style={{color:'var(--text-muted)'}}><FaMapMarkerAlt className="text-blue-400" style={{fontSize:'9px'}} /> {bk.hotel?.location}</div>
+                      <div className="font-semibold text-sm" style={{color:'var(--text-primary)'}}>{bk.hotel?.name || 'Deleted Hotel'}</div>
+                      <div className="text-xs flex items-center gap-1 mt-0.5" style={{color:'var(--text-muted)'}}><FaMapMarkerAlt className="text-blue-400" style={{fontSize:'9px'}} /> {bk.hotel?.location || 'Unknown'}</div>
                       <div className="text-xs mt-1" style={{color:'var(--text-muted)'}}>{bk.user?.name} · {formatDate(bk.checkIn)} → {formatDate(bk.checkOut)}</div>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">

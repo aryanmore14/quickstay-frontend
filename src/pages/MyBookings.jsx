@@ -65,8 +65,8 @@ const MyBookings = () => {
                     <div className="sm:w-40 h-32 sm:h-auto shrink-0"><img src={bk.hotel?.image || FALLBACK_IMG} alt={bk.hotel?.name} className="w-full h-full object-cover" loading="lazy" onError={handleImgError} /></div>
                     <div className="flex-1 p-4 flex flex-col sm:flex-row sm:items-center gap-4">
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-sm mb-1" style={{color:'var(--text-primary)'}}>{bk.hotel?.name}</h3>
-                        <p className="text-xs flex items-center gap-1 mb-2" style={{color:'var(--text-muted)'}}><FaMapMarkerAlt className="text-blue-500" style={{fontSize:'10px'}} /> {bk.hotel?.location}</p>
+                        <h3 className="font-semibold text-sm mb-1" style={{color:'var(--text-primary)'}}>{bk.hotel?.name || 'Deleted Hotel'}</h3>
+                        <p className="text-xs flex items-center gap-1 mb-2" style={{color:'var(--text-muted)'}}><FaMapMarkerAlt className="text-blue-500" style={{fontSize:'10px'}} /> {bk.hotel?.location || 'Unknown'}</p>
                         <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs" style={{color:'var(--text-secondary)'}}>
                           <span className="flex items-center gap-1"><FaCalendarAlt className="text-blue-400" /> {formatDate(bk.checkIn)} → {formatDate(bk.checkOut)}</span>
                           <span>{bk.guests} guest{bk.guests > 1 ? 's' : ''}</span>
