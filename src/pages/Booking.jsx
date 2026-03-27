@@ -61,14 +61,64 @@ const Booking = () => {
   const confirmBooking = async () => {
     if (!paymentMethod) { toast.error('Select a payment method'); return; }
     setPaymentStep('processing');
-    // Simulate payment processing
-    await new Promise(r => setTimeout(r, 2500));
     setBooking(true);
     try {
-      await API.post('/bookings', { hotel: id, checkIn, checkOut, guests: adults + children, totalPrice: roomPrice });
-      setPaymentStep('success');
-      setTimeout(() => { navigate('/my-bookings'); }, 2000);
-    } catch (err) { toast.error(err.response?.data?.message || 'Booking failed'); setPaymentStep('payment'); }
+      // Step 1: Create booking with pending status
+      const { data: bookingData } = await API.post('/bookings', {
+        hotel: id, checkIn, checkOut, guests: adults + children, totalPrice: roomPrice
+      });
+
+      // Step 2: Create Razorpay order
+      const { data: orderData } = await API.post('/payment/create-order', {
+        amount: totalPrice, bookingId: bookingData._id
+      });
+
+      // Step 3: Open Razorpay checkout popup
+      const options = {
+        key: orderData.key,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'Quickstay',
+        description: `Booking at ${hotel.name}`,
+        order_id: orderData.orderId,
+        prefill: { name: user?.name || '', email: user?.email || '' },
+        theme: { color: '#2563eb' },
+        handler: async function (response) {
+          // Step 4: Verify payment
+          try {
+            await API.post('/payment/verify', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              bookingId: bookingData._id,
+            });
+            setPaymentStep('success');
+            setTimeout(() => navigate('/my-bookings'), 2000);
+          } catch (err) {
+            toast.error('Payment verification failed');
+            setPaymentStep('payment');
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            toast.error('Payment cancelled');
+            setPaymentStep('payment');
+            setBooking(false);
+          }
+        }
+      };
+
+      if (window.Razorpay) {
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } else {
+        toast.error('Payment gateway not loaded. Please refresh.');
+        setPaymentStep('payment');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Booking failed');
+      setPaymentStep('payment');
+    }
     finally { setBooking(false); }
   };
 
