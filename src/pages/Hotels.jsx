@@ -117,7 +117,7 @@ const Hotels = () => {
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Advanced Sidebar Filters */}
           <div className={`lg:block ${showFilters ? 'block' : 'hidden'} lg:w-64 shrink-0`}>
-            <div className="card-static p-4 sticky top-24 space-y-5">
+            <div className="card-static p-4 sticky top-24 space-y-5 overflow-hidden">
               <div className="flex items-center justify-between">
                 <h3 className="font-semibold text-sm" style={{color:'var(--text-primary)'}}>Filters</h3>
                 {activeFilterCount > 0 && <button onClick={clearFilters} className="text-xs text-blue-600 hover:underline">Clear all</button>}
@@ -151,7 +151,7 @@ const Hotels = () => {
               {/* Rating Filter */}
               <div>
                 <h4 className="text-xs font-medium uppercase tracking-wider mb-2" style={{color:'var(--text-muted)'}}>Minimum Rating</h4>
-                <div className="flex gap-1.5">
+                <div className="flex flex-wrap gap-1.5">
                   {[0, 3, 3.5, 4, 4.5].map(r => (
                     <button key={r} onClick={() => setMinRating(r)}
                       className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all border ${minRating === r ? 'border-blue-500 text-blue-600' : ''}`}
