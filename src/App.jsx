@@ -1,6 +1,6 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -11,6 +11,14 @@ import Register from './pages/Register';
 import Booking from './pages/Booking';
 import MyBookings from './pages/MyBookings';
 import Admin from './pages/Admin';
+import NotFound from './pages/NotFound';
+
+/* Admin route guard — redirects non-admin users immediately */
+const AdminRoute = () => {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  return user?.role === 'admin' ? <Admin /> : <Navigate to="/" replace />;
+};
 
 const App = () => {
   return (
@@ -27,7 +35,8 @@ const App = () => {
               <Route path="/register" element={<Register />} />
               <Route path="/booking/:id" element={<Booking />} />
               <Route path="/my-bookings" element={<MyBookings />} />
-              <Route path="/admin" element={<Admin />} />
+              <Route path="/admin" element={<AdminRoute />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <Footer />
@@ -36,15 +45,15 @@ const App = () => {
           position="top-right"
           toastOptions={{
             style: {
-              background: '#1e293b',
-              color: '#e2e8f0',
-              border: '1px solid rgba(148, 163, 184, 0.1)',
+              background: 'var(--bg-card)',
+              color: 'var(--text-primary)',
+              border: '1px solid var(--border)',
             },
             success: {
-              iconTheme: { primary: '#22c55e', secondary: '#1e293b' },
+              iconTheme: { primary: '#22c55e', secondary: 'var(--bg-card)' },
             },
             error: {
-              iconTheme: { primary: '#ef4444', secondary: '#1e293b' },
+              iconTheme: { primary: '#ef4444', secondary: 'var(--bg-card)' },
             },
           }}
         />

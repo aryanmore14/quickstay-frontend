@@ -44,6 +44,9 @@ const amenityIcons = {
   'Adventure Sports': FaUmbrellaBeach,
 };
 
+const FALLBACK_IMG = 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80';
+const handleImgError = (e) => { e.target.onerror = null; e.target.src = FALLBACK_IMG; };
+
 const HotelDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -97,8 +100,8 @@ const HotelDetails = () => {
     return (
       <div className="pt-20 min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <p className="text-slate-400 text-lg">Hotel not found.</p>
-          <button onClick={() => navigate('/hotels')} className="mt-4 text-blue-400 hover:text-blue-300 font-medium">
+          <p className="text-lg" style={{color: 'var(--text-muted)'}}>Hotel not found.</p>
+          <button onClick={() => navigate('/hotels')} className="mt-4 text-blue-600 hover:text-blue-500 font-medium">
             Browse hotels
           </button>
         </div>
@@ -112,15 +115,16 @@ const HotelDetails = () => {
         {/* Back */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
+          className="flex items-center gap-2 mb-6 transition-colors hover:text-blue-600"
+          style={{color: 'var(--text-muted)'}}
         >
           <HiArrowLeft /> Back
         </button>
 
         {/* Hero Image */}
         <div className="relative h-[300px] sm:h-[420px] rounded-2xl overflow-hidden mb-8">
-          <img src={hotel.image} alt={hotel.name} className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-dark-900/60 to-transparent" />
+          <img src={hotel.image || FALLBACK_IMG} alt={hotel.name} className="w-full h-full object-cover" onError={handleImgError} />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         </div>
 
         {/* Content */}
@@ -129,32 +133,32 @@ const HotelDetails = () => {
           <div className="lg:col-span-2">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div>
-                <h1 className="font-display font-bold text-3xl sm:text-4xl text-white">{hotel.name}</h1>
-                <div className="flex items-center gap-2 mt-2 text-slate-400">
-                  <FaMapMarkerAlt className="text-blue-400" />
+                <h1 className="font-display font-bold text-3xl sm:text-4xl" style={{color: 'var(--text-primary)'}}>{hotel.name}</h1>
+                <div className="flex items-center gap-2 mt-2" style={{color: 'var(--text-muted)'}}>
+                  <FaMapMarkerAlt className="text-blue-500" />
                   {hotel.location}, Mumbai
                 </div>
               </div>
-              <div className="flex items-center gap-1 bg-yellow-500/90 text-dark-900 px-3 py-1.5 rounded-full text-sm font-bold shrink-0">
-                <FaStar className="text-xs" /> {hotel.rating}
+              <div className="flex items-center gap-1 bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full text-sm font-bold shrink-0">
+                <FaStar className="text-xs text-amber-400" /> {hotel.rating}
               </div>
             </div>
 
-            <p className="text-slate-300 leading-relaxed mb-8">{hotel.description}</p>
+            <p className="leading-relaxed mb-8" style={{color: 'var(--text-secondary)'}}>{hotel.description}</p>
 
             {/* Amenities */}
             <div>
-              <h2 className="font-display font-semibold text-xl text-white mb-4">Amenities</h2>
+              <h2 className="font-display font-semibold text-xl mb-4" style={{color: 'var(--text-primary)'}}>Amenities</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {hotel.amenities.map((amenity) => {
                   const IconComponent = amenityIcons[amenity] || FaConciergeBell;
                   return (
                     <div
                       key={amenity}
-                      className="flex items-center gap-3 glass px-4 py-3 rounded-xl text-sm"
+                      className="card-static flex items-center gap-3 px-4 py-3 rounded-xl text-sm"
                     >
-                      <IconComponent className="text-blue-400 shrink-0" />
-                      <span className="text-slate-300">{amenity}</span>
+                      <IconComponent className="text-blue-500 shrink-0" />
+                      <span style={{color: 'var(--text-secondary)'}}>{amenity}</span>
                     </div>
                   );
                 })}
@@ -164,41 +168,41 @@ const HotelDetails = () => {
 
           {/* Booking Card */}
           <div className="lg:col-span-1">
-            <div className="glass rounded-2xl p-6 sticky top-24">
+            <div className="card-static rounded-2xl p-6 sticky top-24">
               <div className="mb-6">
-                <div className="text-slate-400 text-sm mb-1">Price per night</div>
-                <div className="font-display font-bold text-3xl text-white">
+                <div className="text-sm mb-1" style={{color: 'var(--text-muted)'}}>Price per night</div>
+                <div className="font-display font-bold text-3xl" style={{color: 'var(--text-primary)'}}>
                   {formatPrice(hotel.price)}
-                  <span className="text-slate-400 text-base font-normal"> / night</span>
+                  <span className="text-base font-normal ml-1" style={{color: 'var(--text-muted)'}}> / night</span>
                 </div>
               </div>
 
               <div className="space-y-3 mb-6 text-sm">
-                <div className="flex justify-between text-slate-400">
+                <div className="flex justify-between" style={{color: 'var(--text-secondary)'}}>
                   <span>Location</span>
-                  <span className="text-white">{hotel.location}</span>
+                  <span style={{color: 'var(--text-primary)'}}>{hotel.location}</span>
                 </div>
-                <div className="flex justify-between text-slate-400">
+                <div className="flex justify-between" style={{color: 'var(--text-secondary)'}}>
                   <span>Rating</span>
-                  <span className="text-yellow-400 flex items-center gap-1">
+                  <span className="text-amber-500 flex items-center gap-1">
                     <FaStar className="text-xs" /> {hotel.rating} / 5
                   </span>
                 </div>
-                <div className="flex justify-between text-slate-400">
+                <div className="flex justify-between" style={{color: 'var(--text-secondary)'}}>
                   <span>Amenities</span>
-                  <span className="text-white">{hotel.amenities.length} available</span>
+                  <span style={{color: 'var(--text-primary)'}}>{hotel.amenities.length} available</span>
                 </div>
               </div>
 
               <button
                 onClick={handleBookNow}
-                className="w-full py-3.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl text-white font-semibold hover:from-blue-500 hover:to-purple-500 transition-all shadow-lg shadow-blue-500/25"
+                className="btn-primary w-full"
               >
                 Book Now
               </button>
 
               {!user && (
-                <p className="text-center text-slate-500 text-xs mt-3">
+                <p className="text-center text-xs mt-3" style={{color: 'var(--text-muted)'}}>
                   You'll need to log in to book
                 </p>
               )}

@@ -36,7 +36,11 @@ const MyBookings = () => {
     } catch (err) { toast.error(err.response?.data?.message || 'Failed'); }
   };
 
-  const status = { confirmed: { icon: <FaCheckCircle />, text: 'Confirmed', cls: 'bg-emerald-50 text-emerald-600' }, pending: { icon: <FaClock />, text: 'Pending', cls: 'bg-amber-50 text-amber-600' }, cancelled: { icon: <FaTimesCircle />, text: 'Cancelled', cls: 'bg-red-50 text-red-500' } };
+  const status = {
+    confirmed: { icon: <FaCheckCircle />, text: 'Confirmed', style: { background: 'rgba(34,197,94,0.12)', color: '#22c55e' } },
+    pending: { icon: <FaClock />, text: 'Pending', style: { background: 'rgba(234,179,8,0.12)', color: '#eab308' } },
+    cancelled: { icon: <FaTimesCircle />, text: 'Cancelled', style: { background: 'rgba(239,68,68,0.12)', color: '#ef4444' } },
+  };
 
   if (loading) return <div className="pt-20 min-h-screen max-w-4xl mx-auto px-4 py-8"><div className="h-8 w-48 skeleton mb-6" />{[...Array(3)].map((_, i) => <div key={i} className="h-28 skeleton rounded-2xl mb-4" />)}</div>;
 
@@ -74,7 +78,7 @@ const MyBookings = () => {
                       </div>
                       <div className="flex sm:flex-col items-center sm:items-end gap-3 sm:gap-2">
                         <span className="font-bold" style={{color:'var(--text-primary)'}}>{formatPrice(bk.totalPrice)}</span>
-                        <span className={`badge text-xs ${s.cls} flex items-center gap-1`}>{s.icon} {s.text}</span>
+                        <span className="badge text-xs flex items-center gap-1" style={s.style}>{s.icon} {s.text}</span>
                         {bk.status !== 'cancelled' && <button onClick={() => handleCancel(bk._id)} className="text-xs text-red-500 hover:text-red-600 font-medium hover:bg-red-50 px-2 py-1 rounded-lg transition-all">Cancel</button>}
                       </div>
                     </div>

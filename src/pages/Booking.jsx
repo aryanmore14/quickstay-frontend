@@ -65,7 +65,7 @@ const Booking = () => {
     try {
       // Step 1: Create booking with pending status
       const { data: bookingData } = await API.post('/bookings', {
-        hotel: id, checkIn, checkOut, guests: adults + children, totalPrice: roomPrice
+        hotel: id, checkIn, checkOut, guests: adults + children, totalPrice
       });
 
       // Step 2: Create Razorpay order
